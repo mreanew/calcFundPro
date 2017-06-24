@@ -212,35 +212,42 @@ function calcOutDateTime(){
 	//测试代码 -end
 	var calMoneyDate = null;      //收益截止日
 	var leaveType = getRadioBoxValue('leaveWay');  //确认份额的计算类型； 
-	/*   R+0 百度活期盈/快速取出(资金当天到账) 取出资金部分当天没有收益；
+	/*   R+0 快速取出(资金当天到账) 取出资金部分当天没有收益；
 		R+1  百度定活盈/普通取出，资金下一个工作天到账。收益截止到下一个工作天的前一天；
+		R+2  百度活期盈，收益截止到当前转出时间对应资金确认工作日的昨天；
+		(etc.转出时间 周四15:00~周四14:59 资金到账日 下周一 收益截止 周四；转出时间 周五15:00-下周一 14:59 资金到账日 下周二 收益截止 周日 )
 			  */
-// 	switch()  // 判断是什么计算方式
-	
 			
 	calMoneyDate = new Date(outtime.toDateString());
 	//确认份额日期截止时间 ；
 	var time = document.getElementById('confirmTime').value.split(':');
 	var confirmTime = new Date(outtime).setHours(time[0],time[1],time[2]); //返回毫秒数
 
-	if(leaveType == 'R+1'){
-		//t+1 方式
-		if(intime.getTime() < confirmTime || containsInArray(weekendDayNum , calMoneyDate.getDay())){ 
-			//15点之前 or //是否weekend
-			calMoneyDate = postponeToNextWorkDay(calMoneyDate);
-		} else{ //15点之后
-			calMoneyDate = postponeToNextWorkDay(calMoneyDate);
-			calMoneyDate = postponeToNextWorkDay(calMoneyDate);
-			 } 		
-	} else if(leaveType == 'R+0'){
-		//t+0 方式
+	switch(leaveType){  // 判断是什么计算方式
+		case 'R+0' : calMoneyDate.setDate(calMoneyDate.getDate()-1); 
+					 break;
+		case 'R+1' : 		
+			if(outtime.getTime() < confirmTime || containsInArray(weekendDayNum , calMoneyDate.getDay())){ 
+				//15点之前 or //是否weekend
+				calMoneyDate = postponeToNextWorkDay(calMoneyDate);
+			} else{ //15点之后
+				calMoneyDate = postponeToNextWorkDay(calMoneyDate);
+				calMoneyDate = postponeToNextWorkDay(calMoneyDate);
+				 }
+				calMoneyDate.setDate(calMoneyDate.getDate()-1);
+					 break;
+		case 'R+2' : 
+		//前半部分 与t+0 确认份额 方式 类似
 		if(outtime.getTime() < confirmTime || containsInArray(weekendDayNum , calMoneyDate.getDay())){ 
 			//15点之前 or //是否weekend
 			calMoneyDate = postponeFromWeekendToWorkDay(calMoneyDate);
 		} else{ //15点之后
 			calMoneyDate = postponeToNextWorkDay(calMoneyDate);
-		} 	
-	}
+		} 
+		calMoneyDate.setDate(calMoneyDate.getDate()-1);
+		break;	
+ 	}
+	
 	console.log("outtime");
 	console.log(outtime);
 	console.log(calMoneyDate);
