@@ -1,0 +1,57 @@
+
+<!-- 实现动态组合多个产品收益计算 -->
+<!-- 增加 法定假期 的 开关？ -->
+<!-- 最后java后台保存一个文件 -->
+<!DOCTYPE html>
+<meta http-equiv="Content-Type" content="text/html;charset=UTF-8"> 
+<!-- <script type="text/javascript" src="calcImp.js"></script> -->
+<script type="text/javascript" src="DatePicker/WdatePicker.js"></script>
+<script type="text/javascript" src="Application.js"></script>
+<link type="text/css" href="DatePicker/skin/default/datepicker.css"  rel="stylesheet">
+<html>
+<head>
+<style type="text/css">
+input,br{margin:5px;}
+</style>
+    <title>计算资金收益</title>
+</head>
+<body>
+确认份额时间：<input style="width: 60px;" id="confirmTime" name="confirmTime" onclick="WdatePicker({dateFmt:'HH:mm:ss'});" type="text" value = "15:00:00">
+转出资金时间标准：<input style="width: 60px;" id="leaveTimeNormal" name="leaveTimeNormal" onclick="WdatePicker({dateFmt:'HH:mm:ss'});" type="text" value = "15:00:00">
+</br>
+<span id = "noticeText" >基金行业工作天一至五15点前转入确认当天份额，15点后转入确认T+1天份额。周五15:00后~下周一15:00 前，确认周一的份额；
+</span>
+</br>
+<div>---<b>转入</b>---</div>
+<input type = 'radio' name = "comfirmWay" value = "T+0" />
+确认份额为t日，T+0享受收益；
+</br>
+<input type = 'radio' name = "comfirmWay"  checked = 'checked' value = "T+1" />
+确认份额为t日，T+1享受收益；
+<hr>
+<div>---<b>转出</b>---</div>
+<input type = 'radio' name = "leaveWay"  checked = 'checked' value = "R+0" />
+快速取出(资金当天到账) 取出资金部分当天没有收益,收益截止到昨天
+</br>
+<input type = 'radio' name = "leaveWay"  value = "R+1" />
+百度定活盈/普通取出，资金下一个工作天到账。收益截止到下一个工作天的前一天；
+<input type = 'radio' name = "leaveWay"  value = "R+2" />
+百度活期盈，收益截止到当前转出时间对应资金工作日的昨天；
+<form id = "fm1">
+	
+<!-- 	<div>
+		<label>产品1</label>
+		投入资金<input id = "moneyIn1" name = "moneyIn1" type="text"/>
+		利率（如0.03 年化利率3%）<input id = "rate1" name = "rate1" type="text"/>
+		持有天数<input id = "days1" name = "days1" type="text"/>
+	</div> -->
+	投入时间: <input id="inTime" name="inTime" onclick="WdatePicker({dateFmt:'yyyy-MM-dd HH:mm:ss'});" type="text">
+	转出时间: <input id="outTime" name="outTime" onclick="WdatePicker({dateFmt:'yyyy-MM-dd HH:mm:ss'});" type="text">
+	<div><input value = 'clickaddFund' type = "button" onclick = "addFund()"/></div>
+	<input id = 'calcButton' value = 'calc' type = "button" onclick = "calc()"/><span>&nbsp;&nbsp;</span>
+	
+</form>
+<div id = "resultDiv"><p></p></div>
+</body>
+<script type="text/javascript" src="calcImp.js"></script>
+</html>
