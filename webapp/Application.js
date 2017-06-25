@@ -6,7 +6,13 @@
  *          ------------------------------------------------------
  *
  ************************************************************************************/
- 
+ /* --------------------------------Common.js 部分-------------------- */
+ var DATE_DELIMITER = "-";
+function setDateDelimiter(delimiter) {
+    DATE_DELIMITER = delimiter;
+}
+
+/* ---------------------------------------------------- */
 
 function formatFloat(value,count,precision,delimiterChar)
 {
@@ -108,7 +114,7 @@ function isDate(date,splitChar)
 }
 
 /*初步认定为
-MD D 判断日期差异； 为 M 判断月份差异
+MD D 判断日期差异(相差天数)； 为 M 判断月份差异
 */
 function dateDiff(dateStart,dateEnd,MD)
 {
@@ -159,7 +165,9 @@ function isLeapYear(strCheckYear)
 }
  
 
-
+/*
+get距离今天多天后的日期；
+*/
 function getNextDateFullDate(strDate,intCount)
 {
   var tempDate = new Date(replace(strDate,"-","/"));
@@ -173,6 +181,9 @@ function getNextDateFullDate(strDate,intCount)
   return strReturn;
 }
 
+/*
+get距离今天多月后的日期；
+*/
 function getNextMonthFullDate(strDate,intCount)
 {
   var tempDate = new Date(replace(strDate,"-","/"));
@@ -185,7 +196,9 @@ function getNextMonthFullDate(strDate,intCount)
   var strReturn = convertFullDateToString(tempDate);
   return strReturn;
 }
-
+/*
+get距离今天多年后的日期；
+*/
 function getNextYearFullDate(strDate,intCount)
 {
   var tempDate = new Date(replace(strDate,"-","/"));
@@ -199,6 +212,9 @@ function getNextYearFullDate(strDate,intCount)
   return strReturn;
 }
 
+/*
+将日期date 转换为字符串 字符串显示到 天
+*/
 function convertFullDateToString(date) {
   if(date==null) {
     date = new Date();

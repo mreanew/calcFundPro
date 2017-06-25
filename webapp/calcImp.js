@@ -1,3 +1,9 @@
+/*  ----------------------------------------------------- begin */
+// 文件名：calcImp.js
+var FULL_YEAR_DAYS_IN_FUND = 365; //基金行业的1年默认年化收益天数为365天
+var rate1,days1;
+var fundNum = 0; //理财产品 序号；
+
 // window.onload = addFund();
 ~function (){
 	addFund();
@@ -21,20 +27,16 @@
 }();
 
 
-/*  ----------------------------------------------------- begin */
-// 文件名：calcImp.js
-var FULL_YEAR_DAYS_IN_FUND = 365; //基金行业的1年默认年化收益天数为365天
-var rate1,days1;
-var fundNum = 0; //理财产品 序号；
-
 //增加理财产品
 function addFund(){
 	// console.log(document.getElementById('fm1'));
 	fundNum++;
 	var newNode = document.createElement('div');
+	var calMoneyDays = document.getElementById('calMoneyDays').value ;
+	calMoneyDays = calMoneyDays ? calMoneyDays : ''; //判空
 	var tempHTML = '<label>产品:1</label>投入资金<input id = "moneyIn:1" name = "moneyIn:1" type="text"/>'+
 	'利率(如0.03 年化利率3%)<input id = "rate:1" name = "rate:1" type="text"/>'+
-	'持有天数<input id = "days:1" name = "days:1" type="text"/>'+
+	'持有天数<input id = "days:1" name = "days:1" type="text" value ="'+ calMoneyDays +'" />'+
 	'<label>按日复利计算</label><input id = "isCalcDayByDay:1" type = "checkbox" />'+
 	'</div><input value = \'delete\' type = "button" onclick = "deleteRow(this)" />'
 	
@@ -159,11 +161,17 @@ Number.prototype.add = function (arg) {
     return accAdd(arg, this);
 };
 
-/* 将收益开始结束日期 写到前端；
+/* 将收益开始结束日期\计算收益总天数 写到前端；
 */
 function writeFrontMoneyDate(){
 	document.getElementById('calMoneyDateSt').value = calcInDateTime();
 	document.getElementById('calMoneyDateEnd').value = calcOutDateTime();
+	var calMoneyDateSt =  document.getElementById('calMoneyDateSt').value;
+	var calMoneyDateEnd =  document.getElementById('calMoneyDateEnd').value;
+	//计算收益总天数
+	if(calMoneyDateSt && calMoneyDateEnd){
+		document.getElementById('calMoneyDays').value = dateDiff(new Date(calMoneyDateSt), new Date(calMoneyDateEnd), 'D');
+	}
 }
 
 // var weekDayNum = [0,1,2,3,4,5,6]; // 6，0分别指周六、周日
