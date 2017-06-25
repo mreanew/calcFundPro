@@ -1,4 +1,27 @@
+// window.onload = addFund();
+~function (){
+	addFund();
+	changeNotice();
+	//注册句柄事件
+	document.getElementById('confirmTime').onchange = changeNotice;
 
+	var comfirmWayRadio = document.getElementsByName('comfirmWay');
+	for(var k = 0; k < comfirmWayRadio.length ; k++ ){
+		comfirmWayRadio[k].onclick = writeFrontMoneyDate;
+	}
+	var leaveWayRadio = document.getElementsByName('leaveWay');
+	for(var k = 0; k < leaveWayRadio.length ; k++ ){
+		leaveWayRadio[k].onclick = writeFrontMoneyDate;
+	}
+	
+	document.getElementById('inTime').onchange = writeFrontMoneyDate;
+	document.getElementById('outTime').onchange = writeFrontMoneyDate;
+	document.getElementById('leaveTimeNormal').onchange = writeFrontMoneyDate;
+
+}();
+
+
+/*  ----------------------------------------------------- begin */
 // 文件名：calcImp.js
 var FULL_YEAR_DAYS_IN_FUND = 365; //基金行业的1年默认年化收益天数为365天
 var rate1,days1;
@@ -26,15 +49,9 @@ function changeNotice () {
 	document.getElementById('noticeText').innerText = '基金行业工作天一至五'+ cfTxtTime + 
 	'前转入确认当天份额，'+ cfTxtTime +'点后转入确认T+1天份额。周五'+ cfTxtTime +'后~下周一'
 	+ cfTxtTime +' 前，确认周一的份额;';
-	}
-// window.onload = addFund();
-~function (){
-	addFund();
-	changeNotice();
-	//注册句柄事件
-	document.getElementById('confirmTime').onchange = changeNotice;
-}();
 
+	writeFrontMoneyDate();
+	}
 
 
 /* 计算收益函数 */
@@ -142,6 +159,12 @@ Number.prototype.add = function (arg) {
     return accAdd(arg, this);
 };
 
+/* 将收益开始结束日期 写到前端；
+*/
+function writeFrontMoneyDate(){
+	document.getElementById('calMoneyDateSt').value = calcInDateTime();
+	document.getElementById('calMoneyDateEnd').value = calcOutDateTime();
+}
 
 // var weekDayNum = [0,1,2,3,4,5,6]; // 6，0分别指周六、周日
 // var workdayNum = [1,2,3,4,5] ;// 6，0分别指周六、周日
@@ -152,9 +175,16 @@ var weekendDayNum = [0,6]; //周末
 */
 function calcInDateTime(){
 	console.log("enter calcInDateTime()");
-	var intime = new Date(document.getElementById('inTime').value);
+	
+	var intime = document.getElementById('inTime').value;
+	if(intime){
+		intime = new Date(intime);
+	}
 	//测试代码 -begin
 	if(arguments.length>0){intime =new Date( arguments[0]); }
+	//判断是否为空
+	if(!intime){return '';}
+
 	//测试代码 -end
 	var calMoneyDate = null;      //确认份额日期
 	var comfirmType = getRadioBoxValue('comfirmWay');  //确认份额的计算类型； 
@@ -194,10 +224,13 @@ function calcInDateTime(){
 			calMoneyDate = postponeToNextWorkDay(calMoneyDate);
 		} 	
 	}
-	console.log("intime");
-	console.log(intime);
-	console.log(calMoneyDate);
-	console.log("leave calcInDateTime()");
+
+
+// 	console.log("intime");
+// 	console.log(intime);
+// 	console.log(calMoneyDate);
+// 	console.log("leave calcInDateTime()");
+	return calMoneyDate;
 // 	intime.setHours(15,0,0,0); //计算  比较是15点前还是后；
 }
 
@@ -205,10 +238,19 @@ function calcInDateTime(){
 计算转出时间截止实际收益的那一天
 */
 function calcOutDateTime(){
-	console.log("enter calcInDateTime()");
-	var outtime = new Date(document.getElementById('outTime').value);
+	console.log("enter calcOutDateTime()");
+	
+
+	var outtime = document.getElementById('outTime').value;
+	if(outtime){
+		outtime = new Date(outtime);
+	}
 	//测试代码 -begin
 	if(arguments.length>0){outtime =new Date( arguments[0]); }
+
+	//判断是否为空
+	if(!outtime){return '';}
+
 	//测试代码 -end
 	var calMoneyDate = null;      //收益截止日
 	var leaveType = getRadioBoxValue('leaveWay');  //确认份额的计算类型； 
@@ -219,8 +261,8 @@ function calcOutDateTime(){
 			  */
 			
 	calMoneyDate = new Date(outtime.toDateString());
-	//确认份额日期截止时间 ；
-	var time = document.getElementById('confirmTime').value.split(':');
+	// 转出资金时间截止时间 ；
+	var time = document.getElementById('leaveTimeNormal').value.split(':');
 	var confirmTime = new Date(outtime).setHours(time[0],time[1],time[2]); //返回毫秒数
 
 	switch(leaveType){  // 判断是什么计算方式
@@ -248,10 +290,11 @@ function calcOutDateTime(){
 		break;	
  	}
 	
-	console.log("outtime");
-	console.log(outtime);
-	console.log(calMoneyDate);
-	console.log("leave calcInDateTime()");
+// 	console.log("outtime");
+// 	console.log(outtime);
+// 	console.log(calMoneyDate);
+// 	console.log("leave calcInDateTime()");
+	return calMoneyDate;
 // 	intime.setHours(15,0,0,0); //计算  比较是15点前还是后；
 }
 
@@ -316,7 +359,36 @@ function containsInArray(array , obj){
 
 
 /*
-// 测试开始
+
+//测试数据 时间
+var timeArray = [
+'2017-06-19 14:38:27',
+'2017-06-20 14:38:27',
+'2017-06-21 14:38:27',
+'2017-06-22 14:38:27',
+'2017-06-23 14:38:27',
+'2017-06-24 14:38:27',
+'2017-06-25 14:38:27',
+
+'2017-06-19 15:38:27',
+'2017-06-20 15:38:27',
+'2017-06-21 15:38:27',
+'2017-06-22 15:38:27',
+'2017-06-23 15:38:27',
+'2017-06-24 15:38:27',
+'2017-06-25 15:38:27' ];
+
+// console.log(timeArray);
+//轮询 验证 是否正确；
+for (var i = 0; i < timeArray.length ;i++){
+    console.log(i);
+//     console.log(timeArray[i]);
+    var str = timeArray[i];
+    calcOutDateTime(str);
+}
+
+
+
 //测试数据 时间
 var intimeArray = [
 '2017-06-19 14:38:27',
@@ -341,8 +413,21 @@ for (var i = 0; i < intimeArray.length ;i++){
     console.log(i);
 //     console.log(intimeArray[i]);
     var str = intimeArray[i];
-    calcInDateTime(str);
+    calcDateTime(str);
 }
 
 console.log('end');
+
+switch('a'){
+    case 'a':console.log('a');
+    case 'b':console.log('b');
+    default :console.log('default');
+}
+
+
+switch(1){
+    case 1:console.log('a');
+    case 2:console.log('b');
+    default :console.log('default');
+}
 */

@@ -51,7 +51,11 @@ input,br{margin:5px;}
 	</div> -->
 	投入时间: <input id="inTime" name="inTime" onclick="WdatePicker({dateFmt:'yyyy-MM-dd HH:mm:ss'});" type="text">
 	转出时间: <input id="outTime" name="outTime" onclick="WdatePicker({dateFmt:'yyyy-MM-dd HH:mm:ss'});" type="text">
-	<div><input value = 'clickaddFund' type = "button" onclick = "addFund()"/></div>
+	收益起始日:<input id="calMoneyDateSt" name="calMoneyDateSt" onclick="WdatePicker({dateFmt:'yyyy-MM-dd HH:mm:ss'});" type="text" disabled='disabled'>
+	收益截止日:<input id="calMoneyDateEnd" name="calMoneyDateEnd" onclick="WdatePicker({dateFmt:'yyyy-MM-dd HH:mm:ss'});" type="text" disabled='disabled'>
+	<div>
+		<input value = 'clickaddFund' type = "button" onclick = "addFund()"/>
+	</div>
 	<input id = 'calcButton' value = 'calc' type = "button" onclick = "calc()"/><span>&nbsp;&nbsp;</span>
 	
 </form>
