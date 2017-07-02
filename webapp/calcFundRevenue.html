@@ -11,7 +11,9 @@
 <html>
 <head>
 <style type="text/css">
-input,br{margin:5px;}
+	input,br{margin:5px;}
+	input.short{width:55px;}
+	input.middle{width:110px;}
 </style>
     <title>计算资金收益</title>
 </head>
@@ -54,6 +56,7 @@ input,br{margin:5px;}
 	收益起始日:<input id="calMoneyDateSt" name="calMoneyDateSt" onclick="WdatePicker({dateFmt:'yyyy-MM-dd HH:mm:ss'});" type="text" disabled='disabled'/>
 	收益截止日:<input id="calMoneyDateEnd" name="calMoneyDateEnd" onclick="WdatePicker({dateFmt:'yyyy-MM-dd HH:mm:ss'});" type="text" disabled='disabled'/>
 	收益天数：<input id="calMoneyDays" name="calMoneyDays" disabled='disabled'/>
+
 	<div>
 		<input value = 'clickaddFund' type = "button" onclick = "addFund()"/>
 	</div>

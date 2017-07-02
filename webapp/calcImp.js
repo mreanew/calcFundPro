@@ -34,10 +34,14 @@ function addFund(){
 	var newNode = document.createElement('div');
 	var calMoneyDays = document.getElementById('calMoneyDays').value ;
 	calMoneyDays = calMoneyDays ? calMoneyDays : ''; //判空
-	var tempHTML = '<label>产品:1</label>投入资金<input id = "moneyIn:1" name = "moneyIn:1" type="text"/>'+
-	'利率(如0.03 年化利率3%)<input id = "rate:1" name = "rate:1" type="text"/>'+
-	'持有天数<input id = "days:1" name = "days:1" type="text" value ="'+ calMoneyDays +'" />'+
+	var tempHTML = 
+	'<label>产品:1</label>投入资金<input id = "moneyIn:1" name = "moneyIn:1"  class = "middle" type="text"/>'+
+	'利率(如0.03 年化利率3%)<input id = "rate:1" name = "rate:1" class = "short" type="text"/>'+
+	'持有天数<input id = "days:1" name = "days:1" type="text" class = "short" value ="'+ calMoneyDays +'" />'+
 	'<label>按日复利计算</label><input id = "isCalcDayByDay:1" type = "checkbox" />'+
+	'每月定投时间: <input class = "middle" id="perMonInTime:1" name="perMonInTime:1" '+
+	' onclick="WdatePicker({dateFmt:\'dd:HH:mm:ss\'});" type="text"/> '+
+	'每月定投金额：<input id="perMonInMoney:1" name="perMonInMoney:1" class = "middle" type="text"/> '+
 	'</div><input value = \'delete\' type = "button" onclick = "deleteRow(this)" />'
 	
 	newNode.innerHTML = tempHTML.replace(/:1/g,fundNum); //将:1替换为真正数字；
@@ -68,18 +72,27 @@ function calc() {
 	brString = '</br>';
 	for(var i=1; i<=fundNum; i++){
 		if(!document.getElementById('moneyIn'+i)){ continue;}  //不存在，则跳出本次循环；
-		moneyIn = Number(document.getElementById('moneyIn'+i).value); //本金
-		rate = Number(document.getElementById('rate'+i).value); // 0.03 年化利率3%
-		days = Number(document.getElementById('days'+i).value);
-		isCalcDayByDay =document.getElementById('isCalcDayByDay'+i).checked; //是否按日计算复利
+		var moneyIn = Number(document.getElementById('moneyIn'+i).value); //本金
+		var rate = Number(document.getElementById('rate'+i).value); // 0.03 年化利率3%
+		var days = Number(document.getElementById('days'+i).value);
+		var isCalcDayByDay =document.getElementById('isCalcDayByDay'+i).checked; //是否按日计算复利
+
+		var perMonInTime = 	document.getElementById('perMonInTime'+i).value; 	//每月定投时间;
+		var perMonInMoney =  document.getElementById('perMonInMoney'+i).value; 	 //每月定投金额
+		if(perMonInMoney){perMonInMoney = Number(perMonInMoney);}
 		
 		if(isCalcDayByDay){  //复利计算逻辑
 			stringResult +='产品'+i+'&nbsp;&nbsp;，按日复利，收益后本+息:';
 			var lastMoneyIn = moneyIn; //上期本金
 			var fundRevenue = 0; //累计利息
+			var calMoneyDateMap = calperMonInCalMoneyDays(perMonInTime); //获取每月定投的起始日期Map
 
 			while(days>0){
 			    var fundRevenue1Day
+			    if(calMoneyDateMap.has(days)){
+			    	moneyIn += perMonInMoney; //记录累计投入本金
+			    	lastMoneyIn = lastMoneyIn + perMonInMoney; //记录基金的累计份额
+			    	}
 			    fundRevenue1Day = lastMoneyIn*rate/FULL_YEAR_DAYS_IN_FUND  //每天利息
 				lastMoneyIn = lastMoneyIn + fundRevenue1Day;
 				fundRevenue += fundRevenue1Day; //计算累计利息
@@ -305,6 +318,87 @@ function calcOutDateTime(){
 	return calMoneyDate;
 // 	intime.setHours(15,0,0,0); //计算  比较是15点前还是后；
 }
+
+/**
+根据定投日期,1、先计算每月定投日期，2、再计算每月投入后实际收益起始日
+参数 perMonInTime 定投日期；
+*/
+function calperMonInCalMoneyDays(perMonInTime){
+	//判空
+	var perMonInDateMap  = new Map();
+	if(!perMonInTime){return perMonInDateMap;}
+
+	//转出距离投入的天数;
+	var outDistanceIn ;
+	
+	var inTime =  document.getElementById('inTime').value;
+	var outTime =  document.getElementById('outTime').value;
+	//计算收益总天数
+	if(inTime && outTime){
+		inTime = new Date(inTime);
+		outTime =  new Date(outTime);
+		outDistanceIn = dateDiff( inTime, outTime, 'D');
+	} else{
+		return perMonInDateMap;
+	}
+
+	perMonInTime = perMonInTime.split(':');
+
+	//收益截止距离收益起始的天数，即是收益天数
+	var calMoneyDays = document.getElementById('calMoneyDays');
+	
+	for(var k=0;  ; k++ ){
+			//每月定投日期
+		var perMonInDate = new Date(inTime);
+		var tempdate  =Number(perMonInTime[0]);	// (1~31)	 
+		var tempHour  =perMonInTime[1]; // (0~23)
+		var tempMin  =perMonInTime[2]; // (0~59)
+		var tempSec  =perMonInTime[3];// (0~59)
+		var tempMilliSec = 0; // (0~999)
+
+		//取得k个月份之后的那个月的最后一天。
+		var inTimeStandard = new Date(inTime.getFullYear(),inTime.getMonth() + k +1,0);
+		//k个月份之后的那个月的日期不存在 29 、30、31 的情况。
+		if(tempdate > inTimeStandard.getDate() ){
+			perMonInDate = new Date(inTimeStandard.setDate(inTimeStandard.getDate() +1 ));
+			perMonInDate.setHours( tempHour, tempMin, tempSec, tempMilliSec );
+		} else {
+
+			//每月都存在这天 
+			perMonInDate.setMonth(perMonInDate.getMonth() + k, tempdate); 
+			perMonInDate.setHours( tempHour, tempMin, tempSec, tempMilliSec );
+		}
+		//判断首次定投是否在 投入时间之前;
+		if( k == 0 && inTime.getTime() - perMonInDate.getTime() >=0 ){ continue;}
+
+		//判断最后一次定投是否在 转出时间之后;
+		if( perMonInDate.getTime()- outTime.getTime()>0 ) {break;}
+
+		perMonInDateMap.set(k, perMonInDate);
+	}
+
+	console.log('perMonInDateMap');
+	console.log(perMonInDateMap);
+
+	var resultMap = new Map();
+
+// 	return perMonInDateMap;
+	perMonInDateMap.forEach(function (value, key, map){  
+	//收益截止日期
+	var calMoneyDateEnd =  new Date(document.getElementById('calMoneyDateEnd').value);
+	//每月定投日期对应收益起始日期；
+	var calMoneyDatePMSt =  calcInDateTime(value);
+		resultMap.set(dateDiff(calMoneyDatePMSt , calMoneyDateEnd, 'D') ,  calMoneyDatePMSt );  
+		}
+	)
+
+	console.log('resultMap');
+	console.log(resultMap);
+	
+	return resultMap;
+	
+}
+
 
 /**
  找到下一个工作日

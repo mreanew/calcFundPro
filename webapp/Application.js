@@ -12,6 +12,16 @@ function setDateDelimiter(delimiter) {
     DATE_DELIMITER = delimiter;
 }
 
+function replace(str, strFind, strReplaceWith) {
+    var strReturn;
+    var re = new RegExp(strFind, "g");
+    if (str == null) {
+        return null;
+    }
+    strReturn = str.replace(re, strReplaceWith);
+    return strReturn;
+}
+
 /* ---------------------------------------------------- */
 
 function formatFloat(value,count,precision,delimiterChar)
