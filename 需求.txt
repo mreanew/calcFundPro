@@ -1,3 +1,4 @@
+---理财收益计算器 需求 
 --需求
 4、增加一个时间 模块 失效功能开关；
 2、加上资金到账日期，算出实际收益率= 收益/损耗天数*365/本金；
@@ -12,35 +13,4 @@
 --未验证是否100%正确的项目
 1、 基金定投;
 
-http://www.cnblogs.com/ooOO00/p/6434006.html 
-----js Map
-var key1 = '动态key1';
-var key2 = '动态key2';
-var map = {};
-map[key1] = 1;
-map[key2] = 2;
-  
-console.log(map[key1]);//结果是1.
-console.log(map[key2]);//结果是2.
-  
-//如果遍历map
-for(var prop in map){
-    if(map.hasOwnProperty(prop)){
-        console.log('key is ' + prop +' and value is' + map[prop]);
-    }
-}
 
-
-myMap.entries()
-Return value  -- A new Map iterator object.
-
-var myMap = new Map();
-myMap.set('0', 'foo');
-myMap.set(1, 'bar');
-myMap.set({}, 'baz');
-
-var mapIter = myMap.entries();
-
-console.log(mapIter.next().value); // ["0", "foo"]
-console.log(mapIter.next().value); // [1, "bar"]
-console.log(mapIter.next().value); // [Object, "baz"]
